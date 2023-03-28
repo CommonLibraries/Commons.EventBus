@@ -16,6 +16,14 @@ namespace Commons.EventBus
     {
         bool IsEmpty { get; }
 
+        bool HasSubscriptionsForEvent<TEvent>();
+
+        bool HasSubscriptionsForEvent(string eventName);
+
+        string GetEventName<TEvent>();
+
+        Type GetEventType(string eventName);
+
         IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent<TEvent>();
 
         IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent(string eventName);
@@ -30,10 +38,12 @@ namespace Commons.EventBus
             where TEvent : IEvent
             where TEventHandler : IEventHandler<TEvent>;
 
-        void AddSubscription<TEventHandler>(string eventName)
+        void AddSubscription<TEvent, TEventHandler>(string eventName)
+            where TEvent : IEvent
             where TEventHandler : IEventHandler;
 
-        void RemoveSubscription<TEventHandler>(string eventName)
+        void RemoveSubscription<TEvent, TEventHandler>(string eventName)
+            where TEvent : IEvent
             where TEventHandler : IEventHandler;
 
         void Clear();
