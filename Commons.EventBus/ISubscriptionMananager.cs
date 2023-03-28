@@ -16,15 +16,15 @@ namespace Commons.EventBus
     {
         bool IsEmpty { get; }
 
-        bool HasSubscriptionsForEvent<TEvent>()
-            where TEvent : IEvent;
-
-        bool HasSubscriptionsForEvent(string eventName);
-
         string GetEventName<TEvent>()
             where TEvent : IEvent;
 
         Type GetEventType(string eventName);
+
+        bool HasSubscriptionsForEvent<TEvent>()
+            where TEvent : IEvent;
+
+        bool HasSubscriptionsForEvent(string eventName);
 
         IEnumerable<Subscription> GetSubscriptionsForEvent<TEvent>()
             where TEvent : IEvent;
