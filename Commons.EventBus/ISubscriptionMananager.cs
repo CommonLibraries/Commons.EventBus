@@ -26,10 +26,10 @@ namespace Commons.EventBus
 
         Type GetEventType(string eventName);
 
-        IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent<TEvent>()
+        IEnumerable<Subscription> GetSubscriptionsForEvent<TEvent>()
             where TEvent : IEvent;
 
-        IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent(string eventName);
+        IEnumerable<Subscription> GetSubscriptionsForEvent(string eventName);
 
         event EventHandler<SubscriptionRemovedArgs> OnEventRemoved;
 
