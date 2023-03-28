@@ -16,7 +16,8 @@ namespace Commons.EventBus
     {
         bool IsEmpty { get; }
 
-        bool HasSubscriptionsForEvent<TEvent>();
+        bool HasSubscriptionsForEvent<TEvent>()
+            where TEvent : IEvent;
 
         bool HasSubscriptionsForEvent(string eventName);
 
