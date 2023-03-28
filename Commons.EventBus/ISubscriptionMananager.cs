@@ -20,11 +20,13 @@ namespace Commons.EventBus
 
         bool HasSubscriptionsForEvent(string eventName);
 
-        string GetEventName<TEvent>();
+        string GetEventName<TEvent>()
+            where TEvent : IEvent;
 
         Type GetEventType(string eventName);
 
-        IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent<TEvent>();
+        IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent<TEvent>()
+            where TEvent : IEvent;
 
         IDictionary<string, IList<Subscription>> GetSubscriptionsForEvent(string eventName);
 
