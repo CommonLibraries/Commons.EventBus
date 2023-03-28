@@ -43,11 +43,11 @@ namespace Commons.EventBus
 
         void AddSubscription<TEvent, TEventHandler>(string eventName)
             where TEvent : IEvent
-            where TEventHandler : IEventHandler;
+            where TEventHandler : IEventHandler<TEvent>;
 
         void RemoveSubscription<TEvent, TEventHandler>(string eventName)
             where TEvent : IEvent
-            where TEventHandler : IEventHandler;
+            where TEventHandler : IEventHandler<TEvent>;
 
         void Clear();
     }
