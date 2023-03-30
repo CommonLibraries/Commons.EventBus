@@ -10,12 +10,12 @@ namespace Commons.EventBus
     {
         public Type EventType { get; protected set; }
 
-        public Type HandleType { get; protected set; }
+        public Type HandlerType { get; protected set; }
 
-        public Subscription(Type eventType, Type handleType)
+        public Subscription(Type eventType, Type handlerType)
         {
             this.EventType = eventType;
-            this.HandleType = handleType;
+            this.HandlerType = handlerType;
         }
     }
 }
