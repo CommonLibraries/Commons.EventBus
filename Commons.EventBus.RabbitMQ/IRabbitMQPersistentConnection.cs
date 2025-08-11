@@ -6,8 +6,8 @@ namespace Commons.EventBus.RabbitMQ
     {
         bool IsConnected { get; }
 
-        bool TryConnect();
+        Task<bool> TryConnect(CancellationToken cancellationToken = default);
 
-        IModel CreateModel();
+        Task<IChannel> CreateChannel(CancellationToken cancellationToken = default);
     }
 }

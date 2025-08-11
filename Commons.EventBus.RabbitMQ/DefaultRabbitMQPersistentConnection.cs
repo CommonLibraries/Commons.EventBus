@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System.Net.Sockets;
 
@@ -10,7 +11,7 @@ namespace Commons.EventBus.RabbitMQ
 {
     public class DefaultRabbitMQPersistentConnection : IRabbitMQPersistentConnection
     {
-        private readonly IAsyncConnectionFactory asyncConnectionFactory;
+        private readonly IConnectionFactory asyncConnectionFactory;
 
         private IConnection connection = null!;
 
@@ -34,23 +35,23 @@ namespace Commons.EventBus.RabbitMQ
                 Port = this.options.Port,
                 UserName = this.options.UserName,
                 Password = this.options.Password,
-                DispatchConsumersAsync = true
+                AutomaticRecoveryEnabled = false
             };
         }
 
         public bool IsConnected => this.connection is { IsOpen: true } && !this.disposed;
 
-        public IModel CreateModel()
+        public async Task<IChannel> CreateChannel(CancellationToken cancellationToken = default)
         {
             if (!this.IsConnected)
             {
                 throw new InvalidOperationException("No RabbitMQ connections are available to perform thi action.");
             }
 
-            return this.connection.CreateModel();
+            return await this.connection.CreateChannelAsync();
         }
 
-        public bool TryConnect()
+        public async Task<bool> TryConnect(CancellationToken cancellationToken = default)
         {
             this.logger.LogInformation("RabbitMQ Client is trying to connect.");
 
@@ -60,14 +61,14 @@ namespace Commons.EventBus.RabbitMQ
                 var policy = RetryPolicy
                         .Handle<SocketException>()
                         .Or<BrokerUnreachableException>()
-                        .WaitAndRetryForever(retryAttempt => this.options.RetryDelay, (ex, delay) =>
+                        .WaitAndRetryForeverAsync(retryAttempt => this.options.RetryDelay, (ex, delay) =>
                         {
                             this.logger.LogWarning(ex, "RabbitMQ Client could not connect because '{ExceptionMessage}'. Waiting for {TimeOut} seconds to try again.", ex.Message, delay.TotalSeconds);
                         });
 
-                policy.Execute(() =>
+                await policy.ExecuteAsync(async () =>
                 {
-                    this.connection = this.asyncConnectionFactory.CreateConnection();
+                    this.connection = await this.asyncConnectionFactory.CreateConnectionAsync();
                 });
 
                 if (!this.IsConnected)
@@ -76,9 +77,9 @@ namespace Commons.EventBus.RabbitMQ
                     return false;
                 }
 
-                this.connection.ConnectionShutdown += OnConnectionShutdown;
-                this.connection.CallbackException += OnCallbackException;
-                this.connection.ConnectionBlocked += OnConnectionBlocked;
+                this.connection.ConnectionShutdownAsync += OnConnectionShutdown;
+                this.connection.CallbackExceptionAsync += OnCallbackException;
+                this.connection.ConnectionBlockedAsync += OnConnectionBlocked;
             }
             finally
             {
@@ -89,31 +90,31 @@ namespace Commons.EventBus.RabbitMQ
             return true;
         }
 
-        private void OnConnectionBlocked(object? sender, global::RabbitMQ.Client.Events.ConnectionBlockedEventArgs e)
+        private async Task OnConnectionBlocked(object? sender, global::RabbitMQ.Client.Events.ConnectionBlockedEventArgs e)
         {
             if (this.disposed) return;
 
             this.logger.LogWarning("A RabbitMQ connection is shutdown. Trying to re-connect...");
 
-            this.TryConnect();
+            await this.TryConnect();
         }
 
-        private void OnCallbackException(object? sender, global::RabbitMQ.Client.Events.CallbackExceptionEventArgs e)
+        private async Task OnCallbackException(object? sender, global::RabbitMQ.Client.Events.CallbackExceptionEventArgs e)
         {
             if (this.disposed) return;
 
             this.logger.LogWarning("A RabbitMQ connection throw exception. Trying to re-connect...");
 
-            this.TryConnect();
+            await this.TryConnect();
         }
 
-        private void OnConnectionShutdown(object? sender, ShutdownEventArgs e)
+        private async Task OnConnectionShutdown(object? sender, ShutdownEventArgs e)
         {
             if (this.disposed) return;
 
             this.logger.LogWarning("A RabbitMQ connection is on shutdown. Trying to re-connect...");
 
-            this.TryConnect();
+            await this.TryConnect();
         }
 
         private bool disposed;
@@ -125,9 +126,9 @@ namespace Commons.EventBus.RabbitMQ
             {
                 if (disposing)
                 {
-                    this.connection.ConnectionShutdown -= OnConnectionShutdown;
-                    this.connection.CallbackException -= OnCallbackException;
-                    this.connection.ConnectionBlocked -= OnConnectionBlocked;
+                    this.connection.ConnectionShutdownAsync -= OnConnectionShutdown;
+                    this.connection.CallbackExceptionAsync -= OnCallbackException;
+                    this.connection.ConnectionBlockedAsync -= OnConnectionBlocked;
                     this.connection.Dispose();
                 }
             }

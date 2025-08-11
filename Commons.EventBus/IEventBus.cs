@@ -2,7 +2,7 @@
 {
     public interface IEventBus
     {
-        Task PublishAsync<TEvent>(TEvent @event)
+        void Publish<TEvent>(TEvent @event)
             where TEvent : IEvent;
 
         void Subscribe<TEvent, TEventHandler>()

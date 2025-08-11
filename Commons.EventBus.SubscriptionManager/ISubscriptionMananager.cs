@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Commons.EventBus
+namespace Commons.EventBus.SubscriptionManager
 {
     public class SubscriptionRemovedArgs
     {
@@ -9,6 +9,16 @@ namespace Commons.EventBus
         public SubscriptionRemovedArgs(string eventName)
         {
             EventName = eventName;
+        }
+    }
+
+    public class SubscriptionAddedArgs
+    {
+        public string EventName { get; protected set; }
+
+        public SubscriptionAddedArgs(string eventName)
+        {
+            this.EventName = eventName;
         }
     }
 
@@ -31,6 +41,7 @@ namespace Commons.EventBus
 
         IEnumerable<Subscription> GetSubscriptionsForEvent(string eventName);
 
+        event EventHandler<SubscriptionAddedArgs> OnEventAdded;
         event EventHandler<SubscriptionRemovedArgs> OnEventRemoved;
 
         void AddSubscription<TEvent, TEventHandler>()

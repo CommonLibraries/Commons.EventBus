@@ -4,21 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commons.EventBus.Subscriptions.InMemory
+namespace Commons.EventBus.SubscriptionManager
 {
-    public class InMemorySubscriptionMananager : ISubscriptionMananager
+    public class DefaultSubscriptionMananager : ISubscriptionMananager
     {
         protected readonly IDictionary<string, Type> subscribedEvents;
 
         protected readonly IDictionary<string, IList<Subscription>> subscribedHandlers;
 
-        public InMemorySubscriptionMananager()
+        public DefaultSubscriptionMananager()
         {
             this.subscribedEvents = new Dictionary<string, Type>();
             this.subscribedHandlers = new Dictionary<string, IList<Subscription>>();
         }
 
+        public event EventHandler<SubscriptionAddedArgs>? OnEventAdded;
         public event EventHandler<SubscriptionRemovedArgs>? OnEventRemoved;
+
+        protected void RaiseOnEventAdded(string eventName, Type eventType)
+        {
+            this.OnEventAdded?.Invoke(this, new SubscriptionAddedArgs(eventName));
+        }
 
         protected void RaiseOnEventRemoved(string eventName)
         {
