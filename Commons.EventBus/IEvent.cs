@@ -2,7 +2,8 @@
 {
     public interface IEvent
     {
-        Guid Id { get; set; }
-        DateTime CreatedAt { get; set; }
+        Guid Id { get; }
+        DateTime CreatedAt { get; }
+        string CorrelationId { get; }
     }
 }
