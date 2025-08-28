@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commons.EventBus.RabbitMQ",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons.EventBus.InMemory", "Commons.EventBus.InMemory\Commons.EventBus.InMemory.csproj", "{A20FC232-E77C-4428-8008-234302EAB2F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons.EventBus.SubscriptionManager", "Commons.EventBus.SubscriptionManager\Commons.EventBus.SubscriptionManager.csproj", "{E7242454-E4CB-47E0-786D-62C56543D97F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{A20FC232-E77C-4428-8008-234302EAB2F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A20FC232-E77C-4428-8008-234302EAB2F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A20FC232-E77C-4428-8008-234302EAB2F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7242454-E4CB-47E0-786D-62C56543D97F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7242454-E4CB-47E0-786D-62C56543D97F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7242454-E4CB-47E0-786D-62C56543D97F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7242454-E4CB-47E0-786D-62C56543D97F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Commons.EventBus.SubscriptionManager
+namespace Commons.EventBus
 {
     public class SubscriptionRemovedArgs
     {

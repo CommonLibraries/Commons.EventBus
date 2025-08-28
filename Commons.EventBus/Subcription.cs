@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commons.EventBus.SubscriptionManager
+namespace Commons.EventBus
 {
     public class Subscription
     {

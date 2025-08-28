@@ -1,5 +1,4 @@
 ﻿
-using Commons.EventBus.SubscriptionManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -70,6 +69,11 @@ namespace Commons.EventBus.InMemory
 
         }
 
+        private static async Task RunHandler<TEvent>(TEvent @event, IEventHandler<TEvent> handler, CancellationToken cancellationToken = default) where TEvent: IEvent
+        {
+            await handler.HandleAsync(@event, cancellationToken);
+        }
+
         private async Task HandleEvents(CancellationToken cancellationToken = default)
         {
             var reader = this.eventChannel.Reader;
@@ -82,32 +86,32 @@ namespace Commons.EventBus.InMemory
                     {
                         await using (var scope = this.serviceScopeFactory.CreateAsyncScope())
                         {
-                            var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, subscription.HandlerType, item.Event, cancellationToken);
-                            if (handler is null)
-                            {
-                                continue;
-                            }
+                            var serviceProvider = scope.ServiceProvider;
+                            var handlerTypeInterface = subscription.HandlerType.GetInterface(typeof(IEventHandler<>).Name);
+                            if (handlerTypeInterface is null) continue;
+                            var handler = serviceProvider.GetService(handlerTypeInterface);
+                            if (handler is null) continue;
 
-                            var concreteType = typeof(IEventHandler<>).MakeGenericType(subscription.EventType, typeof(CancellationToken));
-                            var handleMethod = concreteType.GetMethod("HandleAsync");
-                            if (handleMethod is not null)
+                            var runHandlerMethod = typeof(InMemoryEventBus).GetMethod(nameof(RunHandler), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                            if (runHandlerMethod is null) throw new MissingMethodException();
+
+                            var genericRunHandlerMethod = runHandlerMethod?.MakeGenericMethod(subscription.EventType);
+                            var result = genericRunHandlerMethod?.Invoke(null, [item.Event, handler, cancellationToken]) as Task;
+
+                            if (result is not null)
                             {
-                                var result = handleMethod.Invoke(handler, [item.Event, cancellationToken]) as Task;
-                                if (result is not null)
+                                try
                                 {
-                                    try
-                                    {
-                                        await result;
-                                        this.logger.LogTrace("Processed event {EventName}.", item.Name);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        this.logger.LogError(ex, "Could not process event.");
-                                    }
-                                    finally
-                                    {
+                                    await result;
+                                    this.logger.LogTrace("Processed event {EventName}.", item.Name);
+                                }
+                                catch (Exception ex)
+                                {
+                                    this.logger.LogError(ex, "Could not process event.");
+                                }
+                                finally
+                                {
 
-                                    }
                                 }
                             }
                         }

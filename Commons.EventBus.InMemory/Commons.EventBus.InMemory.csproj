@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Commons.EventBus.SubscriptionManager\Commons.EventBus.SubscriptionManager.csproj" />
     <ProjectReference Include="..\Commons.EventBus\Commons.EventBus.csproj" />
   </ItemGroup>
 

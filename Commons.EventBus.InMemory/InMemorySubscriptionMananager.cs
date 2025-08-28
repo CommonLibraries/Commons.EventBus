@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commons.EventBus.SubscriptionManager
+namespace Commons.EventBus
 {
-    public class DefaultSubscriptionMananager : ISubscriptionMananager
+    public class InMemorySubscriptionMananager : ISubscriptionMananager
     {
         protected readonly IDictionary<string, Type> subscribedEvents;
 
         protected readonly IDictionary<string, IList<Subscription>> subscribedHandlers;
 
-        public DefaultSubscriptionMananager()
+        public InMemorySubscriptionMananager()
         {
             this.subscribedEvents = new Dictionary<string, Type>();
             this.subscribedHandlers = new Dictionary<string, IList<Subscription>>();
