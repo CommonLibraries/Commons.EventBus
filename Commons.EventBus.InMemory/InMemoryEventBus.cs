@@ -13,9 +13,9 @@ namespace Commons.EventBus.InMemory
         {
             public string Name { get; }
             public Type Type { get; }
-            public object Event { get; }
+            public IEvent Event { get; }
 
-            public EventWrapper(string name, Type type, object @event)
+            public EventWrapper(string name, Type type, IEvent @event)
             {
                 this.Name = name;
                 this.Type = type;
@@ -69,7 +69,7 @@ namespace Commons.EventBus.InMemory
 
         }
 
-        private static async Task RunHandler<TEvent>(TEvent @event, IEventHandler<TEvent> handler, CancellationToken cancellationToken = default) where TEvent: IEvent
+        private static async Task RunHandler<TEvent>(TEvent @event, IEventHandler<TEvent> handler, CancellationToken cancellationToken = default) where TEvent : IEvent
         {
             await handler.HandleAsync(@event, cancellationToken);
         }
@@ -96,23 +96,39 @@ namespace Commons.EventBus.InMemory
                             if (runHandlerMethod is null) throw new MissingMethodException();
 
                             var genericRunHandlerMethod = runHandlerMethod?.MakeGenericMethod(subscription.EventType);
-                            var result = genericRunHandlerMethod?.Invoke(null, [item.Event, handler, cancellationToken]) as Task;
 
-                            if (result is not null)
+
+                            Func<Task> pipeline = () =>
                             {
-                                try
-                                {
-                                    await result;
-                                    this.logger.LogTrace("Processed event {EventName}.", item.Name);
-                                }
-                                catch (Exception ex)
-                                {
-                                    this.logger.LogError(ex, "Could not process event.");
-                                }
-                                finally
-                                {
+                                var result = genericRunHandlerMethod?.Invoke(null, [item.Event, handler, cancellationToken]) as Task;
+                                if (result is null) throw new InvalidOperationException("Could not invoke event handler.");
+                                return result;
+                            };
 
-                                }
+                            var middlewares = serviceProvider.GetServices<IEventMiddleware>();
+
+                            foreach (var middleware in middlewares.Reverse())
+                            {
+                                var next = pipeline;
+                                pipeline = () => middleware.Invoke(
+                                        item.Event,
+                                        new EventMiddlewareContext() { CancellationToken = cancellationToken },
+                                        next
+                                    );
+                            }
+
+                            try
+                            {
+                                await pipeline();
+                                this.logger.LogTrace("Processed event {EventName}.", item.Name);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.logger.LogError(ex, "Could not process event.");
+                            }
+                            finally
+                            {
+
                             }
                         }
                     }
