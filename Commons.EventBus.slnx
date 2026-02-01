@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Commons.EventBus.InMemory/Commons.EventBus.InMemory.csproj" />
+  <Project Path="Commons.EventBus.RabbitMQ/Commons.EventBus.RabbitMQ.csproj" />
+  <Project Path="Commons.EventBus/Commons.EventBus.csproj" />
+</Solution>
