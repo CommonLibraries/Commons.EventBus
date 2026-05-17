@@ -4,18 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commons.EventBus
+namespace Commons.EventBus;
+
+public class Subscription
 {
-    public class Subscription
+    public Type EventType { get; protected set; }
+
+    public Type HandlerType { get; protected set; }
+
+    public Subscription(Type eventType, Type handlerType)
     {
-        public Type EventType { get; protected set; }
-
-        public Type HandlerType { get; protected set; }
-
-        public Subscription(Type eventType, Type handlerType)
-        {
-            this.EventType = eventType;
-            this.HandlerType = handlerType;
-        }
+        this.EventType = eventType;
+        this.HandlerType = handlerType;
     }
 }

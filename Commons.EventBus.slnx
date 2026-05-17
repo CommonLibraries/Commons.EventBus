@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Commons.EventBus.Extensions/Commons.EventBus.Extensions.csproj" Id="b352cfbc-5471-48c2-a5fb-d2dd7462cb96" />
   <Project Path="Commons.EventBus.InMemory/Commons.EventBus.InMemory.csproj" />
   <Project Path="Commons.EventBus.RabbitMQ/Commons.EventBus.RabbitMQ.csproj" />
   <Project Path="Commons.EventBus/Commons.EventBus.csproj" />

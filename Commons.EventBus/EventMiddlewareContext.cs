@@ -1,7 +1,7 @@
-﻿namespace Commons.EventBus
+﻿namespace Commons.EventBus;
+
+public class EventMiddlewareContext
 {
-    public class EventMiddlewareContext
-    {
-        public CancellationToken CancellationToken { get; init; } = default;
-    }
+    public required string? Context { get; init; }
+    public required CancellationToken CancellationToken { get; init; }
 }

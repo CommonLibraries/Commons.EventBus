@@ -1,65 +1,53 @@
 ﻿using System;
 
-namespace Commons.EventBus
+namespace Commons.EventBus;
+
+public interface ISubscriptionMananager
 {
-    public class SubscriptionRemovedArgs
-    {
-        public string EventName { get; protected set; }
-        
-        public SubscriptionRemovedArgs(string eventName)
-        {
-            EventName = eventName;
-        }
-    }
+    bool IsEmpty { get; }
 
-    public class SubscriptionAddedArgs
-    {
-        public string EventName { get; protected set; }
+    string GetEventName<TEvent>()
+        where TEvent : IEvent;
+    string GetEventName(Type eventType);
 
-        public SubscriptionAddedArgs(string eventName)
-        {
-            this.EventName = eventName;
-        }
-    }
+    Type GetEventType(string eventName);
 
-    public interface ISubscriptionMananager
-    {
-        bool IsEmpty { get; }
+    bool HasSubscriptionsForEvent<TEvent>()
+        where TEvent : IEvent;
 
-        string GetEventName<TEvent>()
-            where TEvent : IEvent;
+    bool HasSubscriptionsForEvent(string eventName);
 
-        Type GetEventType(string eventName);
+    IEnumerable<Subscription> GetSubscriptionsForEvent<TEvent>()
+        where TEvent : IEvent;
+    IEnumerable<Subscription> GetSubscriptionsForEvent(Type eventType);
+    IEnumerable<Subscription> GetSubscriptionsForEvent(string eventName);
 
-        bool HasSubscriptionsForEvent<TEvent>()
-            where TEvent : IEvent;
+    event EventHandler<SubscriptionAddedArgs> OnEventAdded;
+    event EventHandler<SubscriptionRemovedArgs> OnEventRemoved;
 
-        bool HasSubscriptionsForEvent(string eventName);
+    void AddSubscription<TEvent, TEventHandler>()
+        where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>;
 
-        IEnumerable<Subscription> GetSubscriptionsForEvent<TEvent>()
-            where TEvent : IEvent;
+    void AddSubscription(Type eventType, Type eventHandlerType);
 
-        IEnumerable<Subscription> GetSubscriptionsForEvent(string eventName);
+    void AddSubscription<TEvent, TEventHandler>(string eventName)
+        where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>;
 
-        event EventHandler<SubscriptionAddedArgs> OnEventAdded;
-        event EventHandler<SubscriptionRemovedArgs> OnEventRemoved;
+    void AddSubscription(Type eventType, Type eventHandlerType, string eventName);
 
-        void AddSubscription<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
+    void RemoveSubscription<TEvent, TEventHandler>()
+        where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>;
 
-        void RemoveSubscription<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
+    void RemoveSubscription(Type eventType, Type eventHandlerType);
 
-        void AddSubscription<TEvent, TEventHandler>(string eventName)
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
+    void RemoveSubscription<TEvent, TEventHandler>(string eventName)
+        where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>;
 
-        void RemoveSubscription<TEvent, TEventHandler>(string eventName)
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
+    void RemoveSubscription(Type eventType, Type eventHandlerType, string eventName);
 
-        void Clear();
-    }
+    void Clear();
 }

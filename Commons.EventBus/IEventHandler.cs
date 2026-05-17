@@ -1,7 +1,6 @@
-﻿namespace Commons.EventBus
+﻿namespace Commons.EventBus;
+
+public interface IEventHandler<in TEvent> where TEvent : IEvent
 {
-    public interface IEventHandler<in TEvent> where TEvent : IEvent
-    {
-        Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
-    }
+    Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }

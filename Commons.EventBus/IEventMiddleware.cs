@@ -1,7 +1,6 @@
-﻿namespace Commons.EventBus
+﻿namespace Commons.EventBus;
+
+public interface IEventMiddleware
 {
-    public interface IEventMiddleware
-    {
-        Task Invoke(IEvent @event, EventMiddlewareContext context, Func<Task> next);
-    }
+    Task Invoke(IEvent @event, EventMiddlewareContext context, Func<Task> next);
 }
