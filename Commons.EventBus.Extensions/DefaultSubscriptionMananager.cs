@@ -103,26 +103,27 @@ public class InMemorySubscriptionMananager : ISubscriptionMananager
         where TEventHandler : IEventHandler<TEvent>
     {
         string eventName = this.GetEventName<TEvent>();
-        this.AddSubscription<TEvent, TEventHandler>(eventName);
+        this.AddSubscription(typeof(TEvent), typeof(TEventHandler), eventName);
     }
 
     public void AddSubscription(Type eventType, Type eventHandlerType)
     {
-        throw new NotImplementedException();
-    }
-
-    public void AddSubscription(Type eventType, Type eventHandlerType, string eventName)
-    {
-        throw new NotImplementedException();
+        string eventName = this.GetEventName(eventType);
+        this.AddSubscription(eventType, eventHandlerType, eventName);
     }
 
     public void AddSubscription<TEvent, TEventHandler>(string eventName)
         where TEvent : IEvent
         where TEventHandler : IEventHandler<TEvent>
     {
-        if (!this.subscribedEvents.ContainsKey(eventName) || this.subscribedEvents[eventName] != typeof(TEvent))
+        this.AddSubscription(typeof(TEvent), typeof(TEventHandler), eventName);
+    }
+
+    public void AddSubscription(Type eventType, Type eventHandlerType, string eventName)
+    {
+        if (!this.subscribedEvents.ContainsKey(eventName) || this.subscribedEvents[eventName] != eventType)
         {
-            this.subscribedEvents[eventName] = typeof(TEvent);
+            this.subscribedEvents[eventName] = eventType;
             this.subscribedHandlers[eventName] = new List<Subscription>();
         }
 
@@ -130,7 +131,7 @@ public class InMemorySubscriptionMananager : ISubscriptionMananager
         bool alreadySubscribed = false;
         foreach (var subscription in subscriptions)
         {
-            if (subscription.HandlerType == typeof(TEventHandler))
+            if (subscription.HandlerType == eventHandlerType)
             {
                 alreadySubscribed = true;
                 break;
@@ -139,7 +140,7 @@ public class InMemorySubscriptionMananager : ISubscriptionMananager
 
         if (!alreadySubscribed)
         {
-            var subscription = new Subscription(typeof(TEvent), typeof(TEventHandler));
+            var subscription = new Subscription(eventType, eventHandlerType);
             subscriptions.Add(subscription);
         }
     }

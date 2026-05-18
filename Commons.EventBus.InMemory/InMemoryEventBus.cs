@@ -131,16 +131,16 @@ public class InMemoryEventBus : IEventBus
         }
     }
 
-    public void Publish<TEvent>(TEvent @event) where TEvent : IEvent
+    public void Publish(IEvent @event)
     {
-        var eventName = this.subscriptionMananager.GetEventName<TEvent>();
+        var eventName = this.subscriptionMananager.GetEventName(@event.GetType());
         this.Publish(@event, eventName);
     }
 
-    public void Publish<TEvent>(TEvent @event, string eventName) where TEvent : IEvent
+    public void Publish(IEvent @event, string eventName)
     {
         var writer = this.eventChannel.Writer;
-        var eventType = typeof(TEvent);
+        var eventType = @event.GetType();
         if (!writer.TryWrite(new EventWrapper(eventName, eventType, @event)))
         {
             throw new InvalidOperationException("Could not publish event.");

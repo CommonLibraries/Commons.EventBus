@@ -129,9 +129,9 @@ public class RabbitMQEventBus : IEventBus
         }
     }
 
-    public void Publish<TEvent>(TEvent @event) where TEvent : IEvent
+    public void Publish(IEvent @event)
     {
-        var eventName = this.subscriptionMananager.GetEventName<TEvent>();
+        var eventName = this.subscriptionMananager.GetEventName(@event.GetType());
         var eventType = this.subscriptionMananager.GetEventType(eventName);
         if (!this.eventChannel.Writer.TryWrite(new EventWrapper(eventName, eventType, @event)))
         {
@@ -139,9 +139,13 @@ public class RabbitMQEventBus : IEventBus
         }
     }
 
-    public void Publish<TEvent>(TEvent @event, string eventName) where TEvent : IEvent
+    public void Publish(IEvent @event, string eventName)
     {
-        throw new NotImplementedException();
+        var eventType = this.subscriptionMananager.GetEventType(eventName);
+        if (!this.eventChannel.Writer.TryWrite(new EventWrapper(eventName, eventType, @event)))
+        {
+            throw new InvalidOperationException("Cannot publish event.");
+        }
     }
 
     public void Subscribe<TEvent, TEventHandler>()

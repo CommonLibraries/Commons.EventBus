@@ -17,11 +17,11 @@ public static class Extensions
         {
             if (type.IsClass && !type.IsAbstract)
             {
-                var typeInterface = type.GetInterface(nameof(IEventHandler<>));
+                var typeInterface = type.GetInterface(typeof(IEventHandler<>).Name);
                 if (typeInterface is null) continue;
-
                 var eventType = typeInterface.GetGenericArguments()[0];
-                eventBus.Subscribe(typeInterface, eventType);
+                var eventHandlerType = type;
+                eventBus.Subscribe(eventType, eventHandlerType);
             }
         }
         return eventBus;
