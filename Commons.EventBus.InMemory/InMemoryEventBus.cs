@@ -1,4 +1,4 @@
-﻿using Commons.EventBus.Contexts;
+using Commons.EventBus.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -77,11 +77,10 @@ public class InMemoryEventBus : IEventBus
                     await using (var scope = this.serviceScopeFactory.CreateAsyncScope())
                     {
                         var serviceProvider = scope.ServiceProvider;
-                        var handlerTypeInterface = subscription.HandlerType.GetInterface(typeof(IEventHandler<>).Name);
-                        if (handlerTypeInterface is null) continue;
-                        var handler = serviceProvider.GetService(handlerTypeInterface);
+                        
+                        var handlerType = subscription.HandlerType;
+                        var handler = serviceProvider.GetService(handlerType);
                         if (handler is null) continue;
-                        var handlerType = handler.GetType();
                         var context = this.eventHandlerContextLookup.Get(handlerType);
 
                         var runHandlerMethod = typeof(InMemoryEventBus).GetMethod(nameof(RunHandler), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);

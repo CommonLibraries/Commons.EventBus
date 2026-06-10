@@ -42,7 +42,7 @@ internal class DefaultEventBusServiceBuilder : IEventBusServiceBuilder
             var typeInterface = type.GetInterface(typeof(IEventHandler<>).Name);
             if (typeInterface is null) continue;
 
-            this.services.AddTransient(typeInterface, type);
+            this.services.AddTransient(type);
         }
         return this;
     }
@@ -57,7 +57,7 @@ internal class DefaultEventBusServiceBuilder : IEventBusServiceBuilder
             var typeInterface = type.GetInterface(typeof(IEventHandler<>).Name);
             if (typeInterface is null) continue;
 
-            this.services.AddTransient(typeInterface, type);
+            this.services.AddTransient(type);
             this.contextLookup[type] = context;
         }
         return this;

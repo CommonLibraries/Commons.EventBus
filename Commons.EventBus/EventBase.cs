@@ -1,4 +1,4 @@
-﻿namespace Commons.EventBus;
+namespace Commons.EventBus;
 
 public abstract class EventBase : IEvent
 {
