@@ -1,5 +1,10 @@
 using System.Reflection;
 using Commons.EventBus.Contexts;
+using Commons.EventBus.Events;
+using Commons.EventBus.Extensions.Contexts;
+using Commons.EventBus.Filters;
+using Commons.EventBus.Middlewares;
+using Commons.EventBus.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Commons.EventBus.Extensions;
@@ -8,20 +13,23 @@ internal class DefaultEventBusServiceBuilder : IEventBusServiceBuilder
 {
     private readonly IDictionary<Type, string> contextLookup;
     private readonly IServiceCollection services;
+
+    public IServiceCollection Services => this.services;
+
     public DefaultEventBusServiceBuilder(IServiceCollection services)
     {
         this.services = services;
         this.contextLookup = new Dictionary<Type, string>();
+        this.services.AddTransient<ISubscriptionMananager, InMemorySubscriptionMananager>();
+        this.services.AddTransient<IEventHandlerContextLookup>(serviceProvider => new DefaultEventHandlerContextLookup(this.contextLookup));
+        this.services.AddTransient<IEventPublisher, DefaultEventPublisher>();
+        this.services.AddTransient<IEventSubscriber, DefaultEventSubscriber>();
     }
 
     public IEventBusServiceBuilder UseEventBus<TEventBusImplementation>()
         where TEventBusImplementation : class, IEventBus
     {
-        this.services.AddTransient<ISubscriptionMananager, InMemorySubscriptionMananager>();
-        this.services.AddTransient<IEventHandlerContextLookup>(serviceProvider => new DefaultEventHandlerContextLookup(this.contextLookup));
         this.services.AddSingleton(typeof(IEventBus), typeof(TEventBusImplementation));
-        this.services.AddSingleton(typeof(IEventPublisher), serviceProvider => serviceProvider.GetRequiredService<IEventBus>());
-        this.services.AddSingleton(typeof(IEventSubscriber), serviceProvider => serviceProvider.GetRequiredService<IEventBus>());
         return this;
     }
 
@@ -29,6 +37,13 @@ internal class DefaultEventBusServiceBuilder : IEventBusServiceBuilder
         where TMiddleware : class, IEventMiddleware
     {
         this.services.AddTransient<IEventMiddleware, TMiddleware>();
+        return this;
+    }
+
+    public IEventBusServiceBuilder UseFilter<TFilter>()
+        where TFilter : class, IEventFilter
+    {
+        this.services.AddTransient<IEventFilter, TFilter>();
         return this;
     }
 

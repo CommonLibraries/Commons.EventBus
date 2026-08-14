@@ -1,4 +1,4 @@
-﻿namespace Commons.EventBus;
+namespace Commons.EventBus.Events;
 
 public interface IEventHandler<in TEvent> where TEvent : IEvent
 {

@@ -1,3 +1,5 @@
+using Commons.EventBus.Events;
+
 namespace Commons.EventBus.InMemory;
 
 /// <summary>

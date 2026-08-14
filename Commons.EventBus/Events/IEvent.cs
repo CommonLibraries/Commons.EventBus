@@ -1,8 +1,8 @@
-﻿namespace Commons.EventBus;
+namespace Commons.EventBus.Events;
 
 public interface IEvent
 {
     Guid Id { get; }
     DateTime CreatedAt { get; }
-    string? CorrelationId { get; }
+    Guid? CorrelationId { get; set; }
 }

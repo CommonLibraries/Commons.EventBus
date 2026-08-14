@@ -1,4 +1,6 @@
-﻿namespace Commons.EventBus;
+using Commons.EventBus.Events;
+
+namespace Commons.EventBus.Middlewares;
 
 public interface IEventMiddleware
 {

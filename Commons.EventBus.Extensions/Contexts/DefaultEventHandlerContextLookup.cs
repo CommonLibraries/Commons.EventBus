@@ -1,7 +1,7 @@
 using System;
 using Commons.EventBus.Contexts;
 
-namespace Commons.EventBus.Extensions;
+namespace Commons.EventBus.Extensions.Contexts;
 
 public class DefaultEventHandlerContextLookup : IEventHandlerContextLookup
 {

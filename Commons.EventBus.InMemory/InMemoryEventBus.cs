@@ -1,4 +1,8 @@
 using Commons.EventBus.Contexts;
+using Commons.EventBus.Events;
+using Commons.EventBus.Filters;
+using Commons.EventBus.Middlewares;
+using Commons.EventBus.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -144,6 +148,19 @@ public class InMemoryEventBus : IEventBus
         {
             throw new InvalidOperationException("Could not publish event.");
         }
+    }
+
+    public Task PublishAsync(IEvent @event, CancellationToken cancellationToken = default)
+    {
+        var eventName = this.subscriptionMananager.GetEventName(@event.GetType());
+        return this.PublishAsync(@event, eventName, cancellationToken);
+    }
+
+    public async Task PublishAsync(IEvent @event, string eventName, CancellationToken cancellationToken = default)
+    {
+        var writer = this.eventChannel.Writer;
+        var eventType = @event.GetType();
+        await writer.WriteAsync(new EventWrapper(eventName, eventType, @event), cancellationToken);
     }
 
     public void Subscribe<TEvent, TEventHandler>()

@@ -1,15 +1,23 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Commons.EventBus.Events;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Commons.EventBus.Extensions;
 
 public static class Extensions
 {
-    public static IEventBusServiceBuilder ConfigureEventBus(this IServiceCollection services)
+    public static IEventBusServiceBuilder AddEventBus(this IServiceCollection services)
     {
         return new DefaultEventBusServiceBuilder(services);
     }
 
+    /// <summary>
+    /// Add event handlers into subscription list of the event bus.
+    /// These handlers must be registered first by using the IEventBusServiceBuilder.
+    /// </summary>
+    /// <param name="eventBus"></param>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
     public static IEventBus UseEventHandlers(this IEventBus eventBus, Assembly assembly)
     {
         var types = assembly.GetExportedTypes();

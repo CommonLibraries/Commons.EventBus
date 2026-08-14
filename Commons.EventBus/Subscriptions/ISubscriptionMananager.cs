@@ -1,6 +1,7 @@
-﻿using System;
+using Commons.EventBus.Events;
+using System;
 
-namespace Commons.EventBus;
+namespace Commons.EventBus.Subscriptions;
 
 public interface ISubscriptionMananager
 {
