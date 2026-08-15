@@ -187,6 +187,36 @@ public class RabbitMQEventBus : IEventBus
         this.subscriptionMananager.RemoveSubscription<TEvent, TEventHandler>(eventName);
     }
 
+    public Task PublishAsync(IEvent @event, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task PublishAsync(IEvent @event, string eventName, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Subscribe(Type eventType, Type eventHandler)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Subscribe(Type eventType, Type eventHandler, string eventName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Unsubscribe(Type eventType, Type eventHandler)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Unsubscribe(Type eventType, Type eventHandler, string eventName)
+    {
+        throw new NotImplementedException();
+    }
+
     private void OnEventRemovedFromSubscriptionManager(object? sender, SubscriptionRemovedArgs args)
     {
         if (!this.eventBindingChannel.Writer.TryWrite(new EventBinding(args.EventName, EventBinding.BindingType.Unsubscribe)))
